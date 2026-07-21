@@ -1,0 +1,13 @@
+llm_api/key.txt
+llm_api/deepseek_key.txt
+llm_api/openrouter_key.txt
+doc/
+runs/
+OTA_diagnose.md
+SYNTHETIC_ENVIROMENT.md
+.claude/
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+.env

@@ -1,0 +1,336 @@
+{
+  "name": "two_stage_ota_fixed",
+  "description": "Toy two-stage Miller-compensated OTA with PMOS input pair, NMOS mirror load, PMOS second stage, and series RC Miller compensation. PDK-independent benchmark design.",
+  "targets": {
+    "gain_db": 55.0,
+    "ugb_mhz": 22.0,
+    "cmrr_db": 82.0,
+    "pm_deg": 65.0
+  },
+  "assumptions": {
+    "supply_v": 1.2,
+    "load_cap_fF": 100.0,
+    "process_node": "65nm_like",
+    "note": "Targets are qualitative toy-design targets; final performance requires transistor models, bias currents, and post-layout simulation."
+  },
+  "technology": {
+    "min_wire_width_um": 0.1,
+    "process_node": "65nm_like",
+    "mos_pin_order": ["D", "G", "S", "B"],
+    "two_terminal_pin_order": ["P", "N"]
+  },
+  "devices": [
+    {
+      "name": "M0",
+      "type": "pmos",
+      "stage": "tail_current_source",
+      "w_um": 8.0,
+      "l_um": 0.5,
+      "pin_order": ["D", "G", "S", "B"],
+      "nets": ["ptail", "vbias_p", "VDD", "VDD"],
+      "pins": {
+        "D": "ptail",
+        "G": "vbias_p",
+        "S": "VDD",
+        "B": "VDD"
+      }
+    },
+    {
+      "name": "M1",
+      "type": "pmos",
+      "stage": "diff_pair",
+      "w_um": 4.0,
+      "l_um": 0.25,
+      "pin_order": ["D", "G", "S", "B"],
+      "nets": ["out1", "in_p", "ptail", "VDD"],
+      "pins": {
+        "D": "out1",
+        "G": "in_p",
+        "S": "ptail",
+        "B": "VDD"
+      }
+    },
+    {
+      "name": "M2",
+      "type": "pmos",
+      "stage": "diff_pair",
+      "w_um": 4.0,
+      "l_um": 0.25,
+      "pin_order": ["D", "G", "S", "B"],
+      "nets": ["out2", "in_n", "ptail", "VDD"],
+      "pins": {
+        "D": "out2",
+        "G": "in_n",
+        "S": "ptail",
+        "B": "VDD"
+      }
+    },
+    {
+      "name": "M3",
+      "type": "nmos",
+      "stage": "mirror_load",
+      "w_um": 2.0,
+      "l_um": 0.35,
+      "pin_order": ["D", "G", "S", "B"],
+      "nets": ["out1", "out1", "GND", "GND"],
+      "pins": {
+        "D": "out1",
+        "G": "out1",
+        "S": "GND",
+        "B": "GND"
+      }
+    },
+    {
+      "name": "M4",
+      "type": "nmos",
+      "stage": "mirror_load",
+      "w_um": 2.0,
+      "l_um": 0.35,
+      "pin_order": ["D", "G", "S", "B"],
+      "nets": ["out2", "out1", "GND", "GND"],
+      "pins": {
+        "D": "out2",
+        "G": "out1",
+        "S": "GND",
+        "B": "GND"
+      }
+    },
+    {
+      "name": "M6",
+      "type": "pmos",
+      "stage": "second_stage_gain",
+      "w_um": 16.0,
+      "l_um": 0.35,
+      "pin_order": ["D", "G", "S", "B"],
+      "nets": ["vout", "out2", "VDD", "VDD"],
+      "pins": {
+        "D": "vout",
+        "G": "out2",
+        "S": "VDD",
+        "B": "VDD"
+      }
+    },
+    {
+      "name": "M7",
+      "type": "nmos",
+      "stage": "second_stage_current_source",
+      "w_um": 8.0,
+      "l_um": 0.5,
+      "pin_order": ["D", "G", "S", "B"],
+      "nets": ["vout", "vbias_n", "GND", "GND"],
+      "pins": {
+        "D": "vout",
+        "G": "vbias_n",
+        "S": "GND",
+        "B": "GND"
+      }
+    },
+    {
+      "name": "Cc",
+      "type": "cap",
+      "stage": "miller_comp",
+      "w_um": 10.0,
+      "l_um": 10.0,
+      "value_fF_est": 100.0,
+      "pin_order": ["P", "N"],
+      "nets": ["out2", "comp_mid"],
+      "pins": {
+        "P": "out2",
+        "N": "comp_mid"
+      }
+    },
+    {
+      "name": "Rc",
+      "type": "res",
+      "stage": "miller_comp",
+      "w_um": 0.5,
+      "l_um": 20.0,
+      "value_ohm_est": 2000.0,
+      "pin_order": ["P", "N"],
+      "nets": ["comp_mid", "vout"],
+      "pins": {
+        "P": "comp_mid",
+        "N": "vout"
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "in_p",
+      "type": "input",
+      "devices": ["M1"],
+      "role": "positive input"
+    },
+    {
+      "name": "in_n",
+      "type": "input",
+      "devices": ["M2"],
+      "role": "negative input"
+    },
+    {
+      "name": "ptail",
+      "type": "internal",
+      "devices": ["M0", "M1", "M2"],
+      "role": "shared source node of PMOS input differential pair"
+    },
+    {
+      "name": "out1",
+      "type": "internal_signal",
+      "devices": ["M1", "M3", "M4"],
+      "role": "diode-connected mirror reference node"
+    },
+    {
+      "name": "out2",
+      "type": "internal_signal",
+      "devices": ["M2", "M4", "M6", "Cc"],
+      "role": "first-stage output and second-stage input"
+    },
+    {
+      "name": "comp_mid",
+      "type": "internal_signal",
+      "devices": ["Cc", "Rc"],
+      "role": "series Miller compensation intermediate node"
+    },
+    {
+      "name": "vout",
+      "type": "output",
+      "devices": ["M6", "M7", "Rc"],
+      "role": "OTA output"
+    },
+    {
+      "name": "vbias_p",
+      "type": "bias",
+      "devices": ["M0"],
+      "role": "PMOS tail current-source bias"
+    },
+    {
+      "name": "vbias_n",
+      "type": "bias",
+      "devices": ["M7"],
+      "role": "NMOS second-stage current-source bias"
+    },
+    {
+      "name": "VDD",
+      "type": "power",
+      "devices": ["M0", "M1", "M2", "M6"],
+      "role": "positive supply"
+    },
+    {
+      "name": "GND",
+      "type": "power",
+      "devices": ["M3", "M4", "M7"],
+      "role": "ground"
+    }
+  ],
+  "critical_nets": [
+    "in_p",
+    "in_n",
+    "out1",
+    "out2",
+    "vout",
+    "comp_mid"
+  ],
+  "match_pairs": [
+    {
+      "devices": ["M1", "M2"],
+      "reason": "input differential pair; mismatch directly affects input offset, CMRR, and differential gain"
+    },
+    {
+      "devices": ["M3", "M4"],
+      "reason": "NMOS current mirror load; mismatch affects single-ended conversion, gain, and systematic offset"
+    }
+  ],
+  "symmetry_constraints": [
+    {
+      "devices": ["M1", "M2"],
+      "axis": "vertical",
+      "reason": "input-pair symmetry"
+    },
+    {
+      "devices": ["M3", "M4"],
+      "axis": "vertical",
+      "reason": "mirror-load symmetry"
+    }
+  ],
+  "placement_hints": {
+    "preferred_device_groups": [
+      {
+        "name": "input_stage",
+        "devices": ["M0", "M1", "M2", "M3", "M4"],
+        "reason": "keep first-stage devices compact to reduce parasitic imbalance at out1/out2"
+      },
+      {
+        "name": "second_stage",
+        "devices": ["M6", "M7"],
+        "reason": "keep output-stage devices close to vout"
+      },
+      {
+        "name": "compensation_network",
+        "devices": ["Cc", "Rc"],
+        "reason": "place near out2 and vout to control compensation-path parasitics"
+      }
+    ],
+    "relative_placement": [
+      {
+        "left": "M1",
+        "right": "M2",
+        "relation": "symmetric_pair"
+      },
+      {
+        "left": "M3",
+        "right": "M4",
+        "relation": "symmetric_pair"
+      },
+      {
+        "near": ["Cc", "Rc"],
+        "anchor_nets": ["out2", "vout"]
+      }
+    ]
+  },
+  "heuristic_params": {
+    "net_weights": {
+      "in_p": 2.0,
+      "in_n": 2.0,
+      "out1": 2.0,
+      "out2": 4.0,
+      "vout": 4.0,
+      "comp_mid": 3.0,
+      "ptail": 2.0
+    },
+    "placement_bias": {
+      "input_stage": "center",
+      "second_stage": "near_output",
+      "compensation_network": "between_out2_and_vout"
+    },
+    "symmetry": {
+      "M1_M2": true,
+      "M3_M4": true
+    },
+    "routing_priority": {
+      "high": ["out2", "vout", "comp_mid"],
+      "medium": ["in_p", "in_n", "out1", "ptail"],
+      "low": ["vbias_p", "vbias_n"]
+    },
+    "wire_widths": {
+      "VDD": 4.0,
+      "GND": 4.0,
+      "vout": 0.6,
+      "out2": 0.4,
+      "out1": 0.3,
+      "comp_mid": 0.3,
+      "in_p": 0.2,
+      "in_n": 0.2,
+      "vbias_p": 0.2,
+      "vbias_n": 0.2
+    }
+  },
+  "sanity_checks": {
+    "all_device_nets_declared": true,
+    "mos_have_explicit_body_connection": true,
+    "diff_pair_has_shared_source": true,
+    "tail_current_source_connected": true,
+    "mirror_load_has_diode_reference": true,
+    "second_stage_has_gain_device_and_current_source": true,
+    "miller_compensation_is_connected_between_out2_and_vout": true
+  }
+}

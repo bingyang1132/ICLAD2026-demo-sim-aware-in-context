@@ -1,0 +1,44 @@
+{
+  "required_pairs": [
+    {
+      "name": "input_pair",
+      "devices": ["M1", "M2"],
+      "axis": "vertical",
+      "importance": 1.0,
+      "reason": "input differential pair"
+    },
+    {
+      "name": "mirror_load",
+      "devices": ["M3", "M4"],
+      "axis": "vertical",
+      "importance": 0.8,
+      "reason": "NMOS current mirror load"
+    }
+  ],
+  "self_symmetric_devices": [
+    {
+      "name": "M0",
+      "axis": "vertical",
+      "importance": 0.4,
+      "reason": "tail current source should be centered above the input pair"
+    },
+    {
+      "name": "Cc",
+      "axis": "vertical",
+      "importance": 0.3,
+      "reason": "large compensation capacitor benefits from regular placement"
+    }
+  ],
+  "matched_net_pairs": [
+    {
+      "nets": ["in_p", "in_n"],
+      "importance": 1.0,
+      "reason": "input parasitic balance"
+    },
+    {
+      "nets": ["out1", "out2"],
+      "importance": 0.7,
+      "reason": "first-stage branch balance"
+    }
+  ]
+}
