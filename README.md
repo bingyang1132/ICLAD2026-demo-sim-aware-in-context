@@ -93,8 +93,17 @@ The rest of the pipeline does not change.
 
 ## Citation
 
-A paper describing this framework is under review (ICLAD 2026). A BibTeX entry
-will be added here once it is published. Until then, please cite this repository.
+If you use this work, please cite:
+
+```bibtex
+@inproceedings{liu2026simulation,
+  author    = {Bingyang Liu and Ziming Wei and Xiaohan Gao and David Z. Pan},
+  title     = {Simulation-Aware In-Context Policy Improvement for {LLM}-Aided Analog Layout Refinement},
+  booktitle = {2026 IEEE International Conference on LLM-Aided Design (ICLAD)},
+  year      = {2026},
+  publisher = {IEEE}
+}
+```
 
 ## License
 
