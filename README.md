@@ -89,7 +89,7 @@ direct, otherwise Gemini). Use an alias from `--list-models` or pass a full id
 }
 ```
 
-The rest of the pipeline may need to be changed accouding to the specific feedback structure proided.
+The rest of the pipeline may need to be changed accouding to the specific feedback structure provided.
 
 ## Citation
 
